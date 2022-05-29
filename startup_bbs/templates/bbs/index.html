@@ -1,0 +1,107 @@
+{% load static %}
+{% load param_change %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Hello World test!!</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    {# <link rel="stylesheet" href="{% static 'bbs/css/style.css' %}"> #}
+</head>
+<body>
+
+	<main class="container">
+
+		<form class="my-2" action="" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			<input class="form-control" type="text" name="name" placeholder="名前">
+			<textarea class="form-control" name="comment" placeholder="コメント"></textarea>
+			<input type="file" name="image">
+			<input class="form-control" type="submit" value="送信">
+		</form>
+
+		<form class="my-2" action="">
+			<div class="input-group">
+				<input class="form-control" type="text" name="search" placeholder="キーワード検索" value="{{ request.GET.search }}">
+				<div class="input-group-append">
+					<input class="form-control btn btn-outline-primary" type="submit" value="検索">
+				</div>
+
+			</div>
+		</form>
+
+
+		{% for topic in topics %}
+		<div class="border">
+			{% if topic.approval %}
+			<div>{{ topic.dt }}</div>
+			<div>名前:{{ topic.name }}</div>
+			<div>{{ topic.comment }}</div>
+			<div>
+				{# <img src="/media/{{ topic.image }}" alt=""> #}
+				{% if topic.image %}
+				<img src="{{ topic.image.url }}" alt="">
+				{% endif %}
+			</div>
+			{% else %}
+			<div>この投稿は承認待ちです</div>
+			{% endif %}
+		</div>
+		{% endfor %}
+
+		<ul class="pagination justify-content-center">
+			{% if topics.has_previous %}
+			<li class="page-item"><a class="page-link" href="?page=1">最初のページ</a></li>
+			<li class="page-item"><a class="page-link" href="?page={{ topics.previous_page_number }}">前のページ</a></li>
+			{% else %}
+			<li class="page-item"><a class="page-link">最初のページ</a></li>
+			<li class="page-item"><a class="page-link">前のページ</a></li>
+			{% endif %}
+
+			<li class="page-item"><a class="page-link">{{ topics.number }}</a></li>
+
+			{% if topics.has_next %}
+			<li class="page-item"><a class="page-link" href="?page={{ topics.next_page_number }}">次のページ</a></li>
+			<li class="page-item"><a class="page-link" href="?page={{ topics.paginator.num_pages }}">最後のページ</a></li>
+			{% else %}
+			<li class="page-item"><a class="page-link">次のページ</a></li>
+			<li class="page-item"><a class="page-link">最後のページ</a></li>
+			{% endif %}
+		</ul>
+
+		<div><a href="?{% url_replace request 'page' 10 %}">10ページ目</a></div>
+
+		<ul class="pagination justify-content-center">
+			{% if topics.has_previous %}
+			<li class="page-item"><a class="page-link" href="?{% url_replace request 'page' '1' %}">最初のページ</a></li>
+			<li class="page-item"><a class="page-link" href="?{% url_replace request 'page' topics.previous_page_number %}">前のページ</a></li>
+			{% else %}
+			<li class="page-item"><a class="page-link">最初のページ</a></li>
+			<li class="page-item"><a class="page-link">前のページ</a></li>
+			{% endif %}
+
+			<li class="page-item"><a class="page-link">{{ topics.number }}</a></li>
+
+			{% if topics.has_next %}
+			<li class="page-item"><a class="page-link" href="?{% url_replace request 'page' topics.next_page_number %}">次のページ</a></li>
+			<li class="page-item"><a class="page-link" href="?{% url_replace request 'page' topics.paginator.num_pages %}">最後のページ</a></li>
+			{% else %}
+			<li class="page-item"><a class="page-link">次のページ</a></li>
+			<li class="page-item"><a class="page-link">最後のページ</a></li>
+			{% endif %}
+		</ul>
+
+
+		
+
+
+
+	</main>
+
+</body>
+</html>
+
